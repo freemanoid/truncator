@@ -29,7 +29,7 @@ module Truncator
 
         if uri.query
           if uri.host.invalid_length?(truncation_length) and uri.last_path_with_query.length > truncation_length
-            uri = truncate_last_directory(uri, truncation_length)
+            uri = truncate_last_path_segment(uri, truncation_length)
           elsif uri.special_format.valid_length?(truncation_length + uri.last_path_with_query.length) or not uri.path_blank?
             return uri.special_format.truncate!(truncation_length)
           end
@@ -37,8 +37,8 @@ module Truncator
           if uri.host.valid_length?(truncation_length)
             uri = truncate_by_shortest(uri, truncation_length)
           else
-            uri = truncate_all_directories(uri)
-            uri = truncate_last_directory(uri, truncation_length)
+            uri = truncate_all_paths_except_last(uri)
+            uri = truncate_last_path_segment(uri, truncation_length)
           end
         end
 
@@ -46,7 +46,7 @@ module Truncator
       end
 
       private
-        def truncate_all_directories(uri)
+        def truncate_all_paths_except_last(uri)
           uri = uri.dup
           paths = uri.paths
           if paths.size > 1
@@ -55,7 +55,7 @@ module Truncator
           uri
         end
 
-        def truncate_last_directory(uri, truncation_length)
+        def truncate_last_path_segment(uri, truncation_length)
           uri = uri.dup
           last_path_with_query = uri.last_path_with_query
           uri.last_path_with_query = last_path_with_query.truncate(truncation_length)
