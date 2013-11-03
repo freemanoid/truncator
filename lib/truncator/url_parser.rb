@@ -5,7 +5,6 @@ using Truncator::ExtendedArray
 module Truncator
   class UrlParser
     class << self
-      URL_VALID_SYMBOLS = %Q{[#{Regexp.escape('!#$&-;=?-[]_~')}a-zA-Z0-9]}
       SEPARATOR = '...'
       String.separator = SEPARATOR
 
