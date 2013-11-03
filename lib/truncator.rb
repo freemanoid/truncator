@@ -1,4 +1,5 @@
 require 'truncator/version'
 require 'truncator/extended_uri'
 require 'truncator/extended_string'
+require 'truncator/extended_array'
 require 'truncator/url_parser'
