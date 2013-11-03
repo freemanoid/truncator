@@ -139,14 +139,10 @@ class UrlParser
             current_dirs_length += dir.to_s.length
             current_dirs_count += 1
             current_dirs_length_with_slashes = current_dirs_length + (current_dirs_count - 1) - SEPARATOR.length
-            break if url.length - current_dirs_length_with_slashes <= target_length
-          end
-          current_dirs_length_with_slashes = current_dirs_length + (current_dirs_count - 1) - SEPARATOR.length
-
-          if url.length - current_dirs_length_with_slashes <= target_length
-            url[next_min_dir.begin(0)..
-              (dirs[dirs.index(next_min_dir) + (current_dirs_count - 1)].end(0) - 1)] = SEPARATOR
-            break
+            if valid_length?(url.length - current_dirs_length_with_slashes, target_length)
+              url[next_min_dir.begin(0)..(dirs[dirs.index(next_min_dir) + (current_dirs_count - 1)].end(0) - 1)] = SEPARATOR
+              return url
+            end
           end
         end
         url
