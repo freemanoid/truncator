@@ -1,4 +1,5 @@
-# Truncator [![Code Climate](https://codeclimate.com/github/freemanoid/truncator.png)](https://codeclimate.com/github/freemanoid/truncator)
+# Truncator [![Code Climate](https://codeclimate.com/github/freemanoid/truncator.png)](https://codeclimate.com/github/freemanoid/truncator) [![Build Status](https://travis-ci.org/freemanoid/truncator.png)](https://travis-ci.org/freemanoid/truncator)
+
 
 Truncate you urls as much as possible
 
