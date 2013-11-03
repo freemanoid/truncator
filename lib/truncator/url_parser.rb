@@ -5,11 +5,8 @@ class UrlParser
 
     def shorten_url(url, truncation_length = 42)
       url = url.dup
-      unless ordinary_hostname?(url)
-        if url[-1] != '/'
-          # truncate all parameter except the first
-          url[url.index('&')..-1] = '...'
-        end
+      if not ordinary_hostname?(url)
+        url = truncate_all_params_except_first(url) if url[-1] != '/'
         return url
       end
 
@@ -49,6 +46,12 @@ class UrlParser
           str[(length - SEPARATOR.length)..-1] = SEPARATOR
         end
         str
+      end
+
+      def truncate_all_params_except_first(url)
+        url.dup
+        url[url.index('&')..-1] = SEPARATOR
+        url
       end
 
       def ordinary_hostname?(url)
