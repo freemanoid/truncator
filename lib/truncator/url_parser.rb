@@ -62,15 +62,30 @@ module Truncator
           uri
         end
 
-        def truncate_by_shortest(uri, target_length)
-          uri = uri.dup
+        def sort_paths_by_length_and_index!(paths)
+          paths.lazy.with_index.sort_by { |a, i| [a.size, i] }.map(&:first)
+        end
+
+        # Get the sequences of paths from uri
+        def paths_sequences_from_uri(uri)
           paths = uri.paths[0..-2]
-          sorted_sequences = paths.sequences.uniq.map { |i| i.join('/') }.lazy.with_index.sort_by { |a, i| [a.size, i] }.map(&:first)
-          truncated_area = sorted_sequences.find do |seq|
+          paths.sequences.uniq.map { |i| i.join('/') }
+        end
+
+        # Find the appropriate sequence to truncate uri to target length
+        def find_truncated_sequence(uri, sorted_sequences, target_length)
+          sorted_sequences.find do |seq|
             (uri.special_format.length - seq.length + SEPARATOR.length) <= target_length
           end
+        end
 
-          uri.path = uri.path.sub(truncated_area, SEPARATOR)
+        # Truncate the uri via truncating the shortest possible path sequence
+        def truncate_by_shortest(uri, target_length)
+          uri = uri.dup
+          sorted_sequences = sort_paths_by_length_and_index!(paths_sequences_from_uri(uri))
+          truncated_part = find_truncated_sequence(uri, sorted_sequences, target_length)
+
+          uri.path = uri.path.sub(truncated_part, SEPARATOR)
           uri
         end
     end
