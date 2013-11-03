@@ -148,19 +148,19 @@ describe Truncator::UrlParser do
       before do
         @long_urls = [
             "https://www.mass.gov/",
-            "http://www.mass.gov:80/",
+            "http://www.mass.gov:81/",
             "http://user:secret@www.mass.gov/",
             "https://www.mass.gov/?pageID=trepressrelease&L=4&L0=Home&L1=Media+%26+Publications&L2=Treasury+Press+Releases&L3=2006&sid=Ctre&b=pressrelease&f=2006_032706&csid=Ctre",
-            "http://www.mass.gov:80/?pageID=trepressrelease&L=4&L0=Home&L1=Media+%26+Publications&L2=Treasury+Press+Releases&L3=2006&sid=Ctre&b=pressrelease&f=2006_032706&csid=Ctre",
+            "http://www.mass.gov:81/?pageID=trepressrelease&L=4&L0=Home&L1=Media+%26+Publications&L2=Treasury+Press+Releases&L3=2006&sid=Ctre&b=pressrelease&f=2006_032706&csid=Ctre",
             "http://user:secret@www.mass.gov/?pageID=trepressrelease&L=4&L0=Home&L1=Media+%26+Publications&L2=Treasury+Press+Releases&L3=2006&sid=Ctre&b=pressrelease&f=2006_032706&csid=Ctre",
             "ftp://www.mass.gov/"
         ]
         @short_urls = [
             "https://www.mass.gov/",
-            "http://www.mass.gov:80/",
+            "http://www.mass.gov:81/",
             "http://user:secret@www.mass.gov/",
             "https://www.mass.gov/?pageID=trepressrelease...",
-            "http://www.mass.gov:80/?pageID=trepressrelease...",
+            "http://www.mass.gov:81/?pageID=trepressrelease...",
             "http://user:secret@www.mass.gov/?pageID=trepressrelease...",
             "ftp://www.mass.gov/"
         ]

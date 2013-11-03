@@ -1,38 +1,46 @@
+using Truncator::ExtendedURI
+using Truncator::ExtendedString
+
 module Truncator
   class UrlParser
     class << self
       URL_VALID_SYMBOLS = %Q{[#{Regexp.escape('!#$&-;=?-[]_~')}a-zA-Z0-9]}
       SEPARATOR = '...'
+      String.separator = SEPARATOR
 
-      def shorten_url(url, truncation_length = 42)
-        url = url.dup
-        if not ordinary_hostname?(url)
-          url = truncate_all_params_except_first(url) if url[-1] != '/'
-          return url
+      def shorten_url(uri, truncation_length = 42)
+        uri = URI(uri)
+        url = uri.to_s #FIXME: remove after refactoring
+        if not uri.ordinary_hostname?
+          if uri.query
+            uri.query_parameters = [uri.query_parameters.first]
+            return uri.to_s + SEPARATOR
+          else
+            return uri.to_s
+          end
         end
 
         url.sub!(/\Ahttp:\/\//, '') # remove http protocol
         url.gsub(/\/{2,}/, '/') # replace multiple slashes by one
         url.chomp!('/') # remove slash from the end
-        return url if valid_length?(url.length, truncation_length)
+        return url if url.valid_length?(truncation_length)
 
-        if !has_path?(url)
-          url = truncate(url, truncation_length)
-          return url
+        if uri.path_blank? and not uri.query
+          return url.truncate!(truncation_length)
         end
 
-        if params_exists?(url)
-          if invalid_length?(hostname(url).length, truncation_length) and last_directory(url).length > truncation_length
-            url = truncate_last_directory(url, truncation_length)
-          elsif valid_length?(url.length - last_directory(url).length, truncation_length) or !has_dirs?(url)
-            url = truncate(url, truncation_length)
+        if uri.query
+          if hostname(url).invalid_length?(truncation_length) and uri.last_path_with_query.length > truncation_length
+            url = truncate_last_directory(uri, truncation_length).special_format
+          elsif url.valid_length?(truncation_length + uri.last_path_with_query.length) or not uri.path_blank?
+            url.truncate!(truncation_length)
           end
         else
-          if valid_length?(hostname(url).length, truncation_length)
+          if hostname(url).valid_length?(truncation_length)
             url = truncate_by_shortest(url, truncation_length)
           else
-            url = truncate_all_directories(url)
-            url = truncate_last_directory(url, truncation_length)
+            uri = truncate_all_directories(uri)
+            url = truncate_last_directory(uri, truncation_length).special_format
           end
         end
 
@@ -40,60 +48,8 @@ module Truncator
       end
 
       private
-        ## FIXME: add to String#truncate
-        def truncate(str, length)
-          str = str.dup
-          if str.length > length
-            str[(length - SEPARATOR.length)..-1] = SEPARATOR
-          end
-          str
-        end
-
-        def truncate_all_params_except_first(url)
-          url.dup
-          url[url.index('&')..-1] = SEPARATOR
-          url
-        end
-
-        def ordinary_hostname?(url)
-          if url.start_with?('https://')
-            # https
-            false
-          elsif url =~ /^http[s]?:\/\/[a-zA-Z\d.]+:\d{1,5}\//
-            # has port
-            false
-          elsif url.start_with?('ftp://')
-            # ftp
-            false
-          elsif url =~ /^http:\/\/[a-zA-Z\d]+:[a-zA-Z\d]+@[a-zA-Z\d.]+\//
-            # with credentials
-            false
-          else
-            true
-          end
-        end
-
         def hostname(url)
           url[0..(url.index('/') - 1)]
-        end
-
-        def valid_length?(url_length, truncation_length)
-          url_length <= truncation_length
-        end
-
-        def invalid_length?(url_length, truncation_length)
-          !valid_length?(url_length, truncation_length)
-        end
-
-        # Check if url has query parameters
-        def params_exists?(url)
-          valid_symbols_before_params = URL_VALID_SYMBOLS.dup.tap { |r| r[-1] = '.\/]' }
-          !!(url =~ /^#{valid_symbols_before_params}+\?(#{URL_VALID_SYMBOLS}+)/)
-        end
-
-        def params(url)
-          valid_symbols_before_params = URL_VALID_SYMBOLS.dup.tap { |r| r[-1] = '.\/]' }
-          url.match(/^#{valid_symbols_before_params}+\?(#{URL_VALID_SYMBOLS}+)/)[1]
         end
 
         # Get the 'directories' of the link
@@ -101,33 +57,20 @@ module Truncator
           url.to_enum(:scan, /(?<=\/)(#{URL_VALID_SYMBOLS}+)(?=\/)/).map { Regexp.last_match }
         end
 
-        def truncate_all_directories(url)
-          first_slash = url.index('/')
-          last_slash = url.rindex('/')
-          url = url.dup
-          url[first_slash..last_slash] = "/#{SEPARATOR}/"
-          url
+        def truncate_all_directories(uri)
+          uri = uri.dup
+          paths = uri.paths
+          if paths.size > 1
+            uri.paths = [SEPARATOR, paths.last]
+          end
+          uri
         end
 
-        def last_directory(url)
-          url[(url.rindex('/') + 1)..-1]
-        end
-
-        def truncate_last_directory(url, truncation_length)
-          last_dir_begin = url.rindex('/') + 1
-          last_dir = last_directory(url)
-          url = url.dup
-          url[last_dir_begin..-1] = truncate(last_dir, truncation_length)
-          url
-        end
-
-        # If url has any 'dirs' this is suburls between '/'
-        def has_dirs?(url)
-          url.count('/') > 1
-        end
-
-        def has_path?(url)
-          url.count('/') > 0
+        def truncate_last_directory(uri, truncation_length)
+          uri = uri.dup
+          last_path_with_query = uri.last_path_with_query
+          uri.last_path_with_query = last_path_with_query.truncate(truncation_length)
+          uri
         end
 
         def truncate_by_shortest(url, target_length)
@@ -143,7 +86,7 @@ module Truncator
               current_dirs_length += dir.to_s.length
               current_dirs_count += 1
               current_dirs_length_with_slashes = current_dirs_length + (current_dirs_count - 1) - SEPARATOR.length
-              if valid_length?(url.length - current_dirs_length_with_slashes, target_length)
+              if url.valid_length?(target_length + current_dirs_length_with_slashes)
                 url[next_min_dir.begin(0)..(dirs[dirs.index(next_min_dir) + (current_dirs_count - 1)].end(0) - 1)] = SEPARATOR
                 return url
               end
