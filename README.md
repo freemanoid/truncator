@@ -21,7 +21,7 @@ Or install it yourself as:
 It gives you one method to rule your URIs:
 
 ```ruby
-Truncator::Urlparser.shorten_url(uri, truncation_length)
+Truncator::UrlParser.shorten_url(uri, truncation_length)
 ```
 
 ## Contributing
