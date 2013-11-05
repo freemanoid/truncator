@@ -3,9 +3,9 @@
 
 Truncate you urls as much as possible
 
-## Installation
+Works with **ruby >= 2.0**
 
-Add this line to your application's Gemfile:
+## Installation
 
     gem 'truncator'
 

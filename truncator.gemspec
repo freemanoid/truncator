@@ -11,6 +11,7 @@ Gem::Specification.new do |spec|
   spec.summary       = %q{Truncate urls as much as possible}
   spec.homepage      = ""
   spec.license       = "MIT"
+  spec.required_ruby_version = '>= 2.0.0'
 
   spec.files         = `git ls-files`.split($/)
   spec.require_paths = ["lib"]
