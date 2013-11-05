@@ -68,11 +68,6 @@ module Truncator
           port = self.port
           self.to_s.include? ":#{port}"
         end
-
-        def self.insure_leading_slash!(str)
-          str.prepend('/') unless str[0] == '/'
-          str
-        end
     end
   end
 end
