@@ -9,7 +9,11 @@ module Truncator
       String.separator = SEPARATOR
 
       def shorten_url(uri, truncation_length = 42)
-        uri = URI(uri)
+        begin
+          uri = URI(uri)
+        rescue URI::InvalidURIError
+          return uri.truncate(truncation_length)
+        end
 
         if not uri.ordinary_hostname?
           if uri.query
