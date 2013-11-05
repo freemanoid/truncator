@@ -9,7 +9,6 @@ describe Truncator::UrlParser do
       let(:shortened) { Truncator::UrlParser.shorten_url "http://www.foo.com/this/is/a/b/c/d/e/f/string.html" }
 
       it "should default to truncate at 42 characters" do
-        # shortened.should == "www.foo.com/this/is/a/.../e/f/string.html"
         shortened.length.should <= 42
       end
     end
@@ -61,23 +60,7 @@ describe Truncator::UrlParser do
         end
       end
 
-      # it "should replace path segments with ellipses to shorten the path as much as necessary for various lengths", focus: true do
-      #   url = "http://www.foo.com/this/goes/on/and/on/and/on/with/XXX.html"
-      #   Truncator::UrlParser.shorten_url(url, 24).should == "www.foo.com/.../XXX.html"
-      #   32.upto(33) { |n| Truncator::UrlParser.shorten_url(url, n).should == "www.foo.com/.../on/with/XXX.html" }
-      #   35.upto(39) { |n| Truncator::UrlParser.shorten_url(url, n).should == "www.foo.com/this/.../with/XXX.html" }
-      #   40.upto(42) { |n| Truncator::UrlParser.shorten_url(url, n).should == "www.foo.com/this/goes/.../with/XXX.html" }
-      #   43.upto(45) { |n| Truncator::UrlParser.shorten_url(url, n).should == "www.foo.com/this/goes/.../on/with/XXX.html" }
-      # end
     end
-
-    # context "when URL is too long and has at least one sublevel specified as well as a query parameter" do
-    #   let(:shortened) { Truncator::UrlParser.shorten_url("http://www.foo.com/this/goes/on/and/on/and/on/and/on/and/ends/with/XXXX.html?q=1&a=2&b=3", 50) }
-
-    #   it "should replace path segments with ellipses to shorten the path as much as necessary, and show only the first param, followed by ellipses" do
-    #     shortened.should == "www.foo.com/this/goes/.../with/XXXX.html?q=1..."
-    #   end
-    # end
 
     context "when URL is more than 30 chars long and does not have at least one sublevel specified" do
       let(:shortened) { Truncator::UrlParser.shorten_url("http://www.mass.gov/?pageID=trepressrelease&L=4&L0=Home&L1=Media+%26+Publications&L2=Treasury+Press+Releases&L3=2006&sid=Ctre&b=pressrelease&f=2006_032706&csid=Ctre", 30) }
@@ -181,5 +164,4 @@ describe Truncator::UrlParser do
       end
     end
   end
-
 end
