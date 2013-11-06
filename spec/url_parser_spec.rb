@@ -73,12 +73,26 @@ describe Truncator::UrlParser do
     context "when the URL contains a really long host name and a long trailing filename" do
       let(:shortened) { Truncator::UrlParser.shorten_url("http://www128376218.skjdhfskdjfhs.lqdkwjqlkwjdqlqwkjd.com/some/path/1234567890123456789012345678901234test_of_the_mergency_broadcastingnet_work.html", 30) }
 
-      it "should not truncate the host name and truncated the last part of the path to truncation length and all dirs" do
-        shortened.should == "www128376218.skjdhfskdjfhs.lqdkwjqlkwjdqlqwkjd.com/.../123456789012345678901234567..."
+      it "should truncate to 30 chars with ellipses" do
+        shortened.should == "www128376218.skjdhfskdjfhs...."
       end
     end
 
-    #TODO: this and the next spec can be merged
+    context 'when turning subfolder(s) into ellipses does not truncate enough' do
+      let(:hypenated_url) { 'http://www.whitehouse.gov/contact/submit-questions-and-comments' }
+      it 'should truncate to 30 chars with ellipses' do
+        Truncator::UrlParser.shorten_url(hypenated_url, 30).should == 'http://www.whitehouse.gov/c...'
+      end
+    end
+
+    context "when the URL contains a short host name, short folder names, and a longer trailing filename" do
+      let(:shortened) { Truncator::UrlParser.shorten_url("http://www.ddd.com/some/path/1234567890.html", 30) }
+
+      it "should truncate to 30 chars with ellipses" do
+        shortened.should == "http://www.ddd.com/.../1234567890.html"
+      end
+    end
+
     context "when the URL contains a really long host name and is an http url and has an empty path" do
       let(:shortened) { Truncator::UrlParser.shorten_url("http://www128376218.skjdhfskdj.lqdkwjqlkwjdqlqwkjd.com/", 30) }
 
@@ -98,8 +112,8 @@ describe Truncator::UrlParser do
     context "when the URL contains a really long host name and has a really long query parameter" do
       let(:shortened) { Truncator::UrlParser.shorten_url("http://www128376218.skjdhfskdjfhs.lqdkwjqlkwjdqlqwkjd.com/?cmd=1234567890123456789012345678901234&api_key=1234567890123456789012345678901234", 30) }
 
-      it "should not truncate the host name but truncate the query parameter" do
-        shortened.should == "www128376218.skjdhfskdjfhs.lqdkwjqlkwjdqlqwkjd.com/?cmd=1234567890123456789012..."
+      it "should truncate to 30 chars with ellipses" do
+        shortened.should == "www128376218.skjdhfskdjfhs...."
       end
     end
 
@@ -156,11 +170,11 @@ describe Truncator::UrlParser do
       end
     end
 
-    context 'when URL is invalid URL' do
+    context ' when URL is invalid URL ' do
       let(:dangerous_url) { "http://www.first.army.mil/family/contentdisplayFAFP.asp?ContentID=133&SiteID=\"><script>alert(String.fromCharCode(88,83,83))</script>" }
 
-      it 'should just perform a basic truncation' do
-        Truncator::UrlParser.shorten_url(dangerous_url, 30).should == 'http://www.first.army.mil/f...'
+      it ' should just perform a basic truncation ' do
+        Truncator::UrlParser.shorten_url(dangerous_url, 30).should == ' http : // www.first.army.mil/f...'
       end
     end
   end
