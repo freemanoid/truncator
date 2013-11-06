@@ -27,23 +27,6 @@ module Truncator
         self
       end
 
-      def last_path_with_query
-        str = "#{self.paths.last}"
-        if self.query
-          str += "?#{self.query}"
-        end
-        str
-      end
-
-      def last_path_with_query=(str)
-        last_path, query = str.split('?')
-        _paths = self.paths
-        _paths[-1] = last_path.to_s if _paths.last
-        self.paths = _paths
-        self.query = query
-        self
-      end
-
       def query_parameters
         URI.decode_www_form(self.query)
       end

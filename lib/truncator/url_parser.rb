@@ -31,17 +31,17 @@ module Truncator
         end
 
         if uri.query
-          if uri.host.invalid_length?(truncation_length) and uri.last_path_with_query.length > truncation_length
-            uri = truncate_last_path_segment(uri, truncation_length)
-          elsif uri.special_format.valid_length?(truncation_length + uri.last_path_with_query.length) or not uri.path_blank?
             return uri.special_format.truncate!(truncation_length)
-          end
         else
           if uri.host.valid_length?(truncation_length)
-            uri = truncate_by_shortest(uri, truncation_length)
+            result = truncate_by_shortest(uri, truncation_length)
+            if result
+              uri = result
+            else
+              return uri.special_format.truncate!(truncation_length)
+            end
           else
-            uri = truncate_all_paths_except_last(uri)
-            uri = truncate_last_path_segment(uri, truncation_length)
+            return uri.special_format.truncate!(truncation_length)
           end
         end
 
@@ -49,22 +49,6 @@ module Truncator
       end
 
       private
-        def truncate_all_paths_except_last(uri)
-          uri = uri.dup
-          paths = uri.paths
-          if paths.size > 1
-            uri.paths = [SEPARATOR, paths.last]
-          end
-          uri
-        end
-
-        def truncate_last_path_segment(uri, truncation_length)
-          uri = uri.dup
-          last_path_with_query = uri.last_path_with_query
-          uri.last_path_with_query = last_path_with_query.truncate(truncation_length)
-          uri
-        end
-
         def sort_paths_by_length_and_index!(paths)
           paths.lazy.with_index.sort_by { |a, i| [a.size, i] }.map(&:first)
         end
@@ -83,13 +67,18 @@ module Truncator
         end
 
         # Truncate the uri via truncating the shortest possible path sequence
+        # return nil if can't truncate
         def truncate_by_shortest(uri, target_length)
           uri = uri.dup
           sorted_sequences = sort_paths_by_length_and_index!(paths_sequences_from_uri(uri))
           truncated_part = find_truncated_sequence(uri, sorted_sequences, target_length)
 
-          uri.path = uri.path.sub(truncated_part, SEPARATOR)
-          uri
+          if truncated_part
+            uri.path = uri.path.sub(truncated_part, SEPARATOR)
+            uri
+          else
+            nil
+          end
         end
     end
   end
