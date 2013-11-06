@@ -81,15 +81,15 @@ describe Truncator::UrlParser do
     context 'when turning subfolder(s) into ellipses does not truncate enough' do
       let(:hypenated_url) { 'http://www.whitehouse.gov/contact/submit-questions-and-comments' }
       it 'should truncate to 30 chars with ellipses' do
-        Truncator::UrlParser.shorten_url(hypenated_url, 30).should == 'http://www.whitehouse.gov/c...'
+        Truncator::UrlParser.shorten_url(hypenated_url, 30).should == 'www.whitehouse.gov/contact/...'
       end
     end
 
     context "when the URL contains a short host name, short folder names, and a longer trailing filename" do
-      let(:shortened) { Truncator::UrlParser.shorten_url("http://www.ddd.com/some/path/1234567890.html", 30) }
+      let(:shortened) { Truncator::UrlParser.shorten_url("http://www.ddd.com/some/path/123456789.html", 30) }
 
       it "should truncate to 30 chars with ellipses" do
-        shortened.should == "http://www.ddd.com/.../1234567890.html"
+        shortened.should == "www.ddd.com/.../123456789.html"
       end
     end
 
@@ -170,11 +170,11 @@ describe Truncator::UrlParser do
       end
     end
 
-    context ' when URL is invalid URL ' do
+    context 'when URL is invalid URL' do
       let(:dangerous_url) { "http://www.first.army.mil/family/contentdisplayFAFP.asp?ContentID=133&SiteID=\"><script>alert(String.fromCharCode(88,83,83))</script>" }
 
-      it ' should just perform a basic truncation ' do
-        Truncator::UrlParser.shorten_url(dangerous_url, 30).should == ' http : // www.first.army.mil/f...'
+      it 'should just perform a basic truncation' do
+        Truncator::UrlParser.shorten_url(dangerous_url, 30).should == 'http://www.first.army.mil/f...'
       end
     end
   end
