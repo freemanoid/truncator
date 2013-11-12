@@ -163,5 +163,13 @@ describe Truncator::UrlParser do
         Truncator::UrlParser.shorten_url(dangerous_url, 30).should == 'http://www.first.army.mil/f...'
       end
     end
+
+    context 'when URL contains query param with no value' do
+      let(:missing_param_value) { 'https://npiregistry.cms.hhs.gov/NPPESRegistry/DisplayProviderDetails.do?searchNpi=1629006051&city=&firstName=&orgName=&searchType=ind&state=&npi=1629006051&orgDba=&lastName=&zip' }
+
+      it 'should just perform a basic truncation' do
+        Truncator::UrlParser.shorten_url(missing_param_value).should == 'https://npiregistry.cms.hhs.gov/NPPESRegistry/DisplayProviderDetails.do?searchNpi=1629006051...'
+      end
+    end
   end
 end
