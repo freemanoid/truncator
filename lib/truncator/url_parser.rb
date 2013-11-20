@@ -43,7 +43,7 @@ module Truncator
 
         uri.special_format
       rescue Exception
-        return uri.to_s.truncate(truncation_length)
+        return uri.to_s.sub(/\Ahttp:\/\//, '').truncate(truncation_length)
       end
 
       private
