@@ -12,6 +12,7 @@ module Truncator
         begin
           uri = URI(uri)
         rescue URI::InvalidURIError
+          uri.sub!(/\Ahttp:\/\//, '') # remove http protocol
           return uri.truncate(truncation_length)
         end
 

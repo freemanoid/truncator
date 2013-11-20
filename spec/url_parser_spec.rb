@@ -173,8 +173,8 @@ describe Truncator::UrlParser do
     context 'when URL is invalid URL' do
       let(:dangerous_url) { "http://www.first.army.mil/family/contentdisplayFAFP.asp?ContentID=133&SiteID=\"><script>alert(String.fromCharCode(88,83,83))</script>" }
 
-      it 'should just perform a basic truncation' do
-        Truncator::UrlParser.shorten_url(dangerous_url, 30).should == 'http://www.first.army.mil/f...'
+      it 'should just perform a basic truncation after removing http://' do
+        Truncator::UrlParser.shorten_url(dangerous_url, 30).should == 'www.first.army.mil/family/c...'
       end
     end
   end
