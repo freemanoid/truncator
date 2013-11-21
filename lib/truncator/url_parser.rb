@@ -47,6 +47,9 @@ module Truncator
         end
 
         uri.special_format
+
+      rescue Truncator::ExtendedURI::QueryParamWithoutValueError
+        return uri.to_s.truncate(truncation_length)
       end
 
       private

@@ -2,6 +2,8 @@ require 'uri'
 
 module Truncator
   module ExtendedURI
+    class QueryParamWithoutValueError < URI::Error; end
+
     refine URI::Generic do
       def ordinary_hostname?
         if %w(https ftp).include?(self.scheme) || self.userinfo || self.port_defined?
@@ -28,7 +30,11 @@ module Truncator
       end
 
       def query_parameters
-        URI.decode_www_form(self.query)
+        begin
+          URI.decode_www_form(self.query)
+        rescue ArgumentError # fixed in ruby 2.1.0 r40460
+          raise QueryParamWithoutValueError
+        end
       end
 
       def query_parameters=(params)

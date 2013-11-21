@@ -182,7 +182,7 @@ describe Truncator::UrlParser do
       let(:missing_param_value) { 'https://npiregistry.cms.hhs.gov/NPPESRegistry/DisplayProviderDetails.do?searchNpi=1629006051&city=&firstName=&orgName=&searchType=ind&state=&npi=1629006051&orgDba=&lastName=&zip' }
 
       it 'should just perform a basic truncation' do
-        Truncator::UrlParser.shorten_url(missing_param_value).should == 'https://npiregistry.cms.hhs.gov/NPPESRegistry/DisplayProviderDetails.do?searchNpi=1629006051...'
+        Truncator::UrlParser.shorten_url(missing_param_value).should == 'https://npiregistry.cms.hhs.gov/NPPESRe...'
       end
     end
   end
