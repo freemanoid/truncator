@@ -48,7 +48,7 @@ module Truncator
 
         uri.special_format
 
-      rescue Truncator::ExtendedURI::QueryParamWithoutValueError
+      rescue Truncator::ExtendedURI::QueryParamWithoutValueError # for ruby <2.1.0 r40460
         return uri.to_s.truncate(truncation_length)
       end
 

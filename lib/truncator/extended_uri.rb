@@ -30,10 +30,14 @@ module Truncator
       end
 
       def query_parameters
-        begin
+        if RUBY_VERSION == '2.1.0' and RUBY_REVISION >= 40460
           URI.decode_www_form(self.query)
-        rescue ArgumentError # fixed in ruby 2.1.0 r40460
-          raise QueryParamWithoutValueError
+        else
+          begin
+            URI.decode_www_form(self.query)
+          rescue ArgumentError # fixed in ruby 2.1.0 r40460
+            raise QueryParamWithoutValueError
+          end
         end
       end
 
