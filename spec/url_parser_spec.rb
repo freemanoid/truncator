@@ -176,6 +176,14 @@ describe Truncator::UrlParser do
       it 'should just perform a basic truncation after removing http://' do
         Truncator::UrlParser.shorten_url(dangerous_url, 30).should == 'www.first.army.mil/family/c...'
       end
+
+      context 'string is frozen' do
+        let(:frozen_string) { dangerous_url.freeze }
+
+        it "shouldn't raise exception" do
+          expect { Truncator::UrlParser.shorten_url(frozen_string, 30)}.not_to raise_exception
+        end
+      end
     end
 
     context 'when URL contains query param with no value' do
