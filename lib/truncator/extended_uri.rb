@@ -6,7 +6,7 @@ module Truncator
 
     refine URI::Generic do
       def ordinary_hostname?
-        if %w(https ftp).include?(self.scheme) || self.userinfo || self.port_defined?
+        if %w(https ftp).include?(self.scheme) || self.userinfo || port_defined?
           false
         else
           true
@@ -57,10 +57,11 @@ module Truncator
       end
 
       private
-        def port_defined?
-          port = self.port
-          self.to_s.include? ":#{port}"
-        end
+
+      def port_defined?
+        port = self.port
+        self.to_s.include? ":#{port}"
+      end
     end
   end
 end
