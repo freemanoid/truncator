@@ -30,14 +30,14 @@ module Truncator
       end
 
       def query_parameters
-        if RUBY_VERSION == '2.1.0' and RUBY_REVISION >= 40460
-          URI.decode_www_form(self.query)
-        else
+        if query_bug_in_ruby?
           begin
             URI.decode_www_form(self.query)
           rescue ArgumentError # fixed in ruby 2.1.0 r40460
             raise QueryParamWithoutValueError
           end
+        else
+          URI.decode_www_form(self.query)
         end
       end
 
@@ -61,6 +61,10 @@ module Truncator
       def port_defined?
         port = self.port
         self.to_s.include? ":#{port}"
+      end
+
+      def query_bug_in_ruby?
+        Gem::Version.new(RUBY_VERSION) <= Gem::Version.new('2.1.0')
       end
     end
   end

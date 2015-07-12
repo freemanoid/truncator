@@ -16,7 +16,7 @@ module Truncator
           return uri.truncate(truncation_length)
         end
 
-        if not uri.ordinary_hostname?
+        if !uri.ordinary_hostname?
           if uri.query
             uri.query_parameters = [uri.query_parameters.first]
             return uri.to_s + SEPARATOR
@@ -27,12 +27,12 @@ module Truncator
 
         return uri.special_format if uri.special_format.valid_length?(truncation_length)
 
-        if uri.path_blank? and not uri.query
+        if uri.path_blank? && !uri.query
           return uri.special_format.truncate!(truncation_length)
         end
 
         if uri.query
-            return uri.special_format.truncate!(truncation_length)
+          return uri.special_format.truncate!(truncation_length)
         else
           if uri.host.valid_length?(truncation_length)
             result = truncate_by_shortest(uri, truncation_length)

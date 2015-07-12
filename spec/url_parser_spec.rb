@@ -2,9 +2,7 @@ require 'spec_helper'
 require 'truncator'
 
 describe Truncator::UrlParser do
-
   describe ".shorten_url" do
-
     context "when no truncation length is specified, the URL is too long, has sublevels, but no query params" do
       let(:shortened) { Truncator::UrlParser.shorten_url "http://www.foo.com/this/is/a/b/c/d/e/f/string.html" }
 
@@ -183,14 +181,6 @@ describe Truncator::UrlParser do
         it "shouldn't raise exception" do
           expect { Truncator::UrlParser.shorten_url(frozen_string, 30)}.not_to raise_exception
         end
-      end
-    end
-
-    context 'when URL contains query param with no value' do
-      let(:missing_param_value) { 'https://npiregistry.cms.hhs.gov/NPPESRegistry/DisplayProviderDetails.do?searchNpi=1629006051&city=&firstName=&orgName=&searchType=ind&state=&npi=1629006051&orgDba=&lastName=&zip' }
-
-      it 'should just perform a basic truncation' do
-        Truncator::UrlParser.shorten_url(missing_param_value).should == 'https://npiregistry.cms.hhs.gov/NPPESRe...'
       end
     end
   end
